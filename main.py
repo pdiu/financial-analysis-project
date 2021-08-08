@@ -1,37 +1,53 @@
 import requests
 import pandas as pd
 import json
-import psycopg2
+import pathlib
 
 config_file = open('config.json')
 config = json.load(config_file)
-api_key = config["alphavantage"]["apikey"]
-print(f"apikey: {api_key}\n")
+alphavantage_api = config["alphavantage"]
+base_url = alphavantage_api["baseurl"]
+api_key = alphavantage_api["apikey"]
 
-params = {
+base_params = {
     "apikey": api_key,
     "Accept": "application/json",
-    "function": "OVERVIEW",
-    "symbol": "IBM"
+    "function": "OVERVIEW"
 }
 
-def getData(url, params):
-    """[summary]
+symbols = ["AMC", "TSLA", "BB"]
 
-    Args:
-        url ([type]): [description]
-        params ([type]): [description]
-    """
-    response = requests.get(url, params=params)
-    print(f"***Request properties***")
-    print(f"url: {response.request.url}")
-    print(f"body: {response.request.body}")
-    print(f"headers: {response.request.headers}\n")
-    
-    series_data = pd.Series(response.json())
-    df = pd.DataFrame(series_data).transpose()
-    print(df.head())
-    
+def getCompanyOverview(url, params, symbols):
+    df_list = []
+    for symbol in symbols:
+        params["symbol"] = symbol
+        response = requests.get(url, params=params)
+        series_data = pd.Series(response.json())
+        df = pd.DataFrame(series_data).transpose()
+        print(df.head())
+        df_list.append(df)
+        
+    return df_list
+
+def getExistingSymbols():
+    data = pd.read_csv("Data - Company Overviews.csv")
+    for d in data["Symbol"]:
+        print(d, sep = ",")
+
+def createCSV(df_list):
+    for df in df_list:
+        if pathlib.Path("Data - Company Overviews.csv").exists():
+            data = pd.read_csv("Data - Company Overviews.csv")
+            if df["Symbol"][0] not in list(data["Symbol"]):
+                print(f"Appending {df['Symbol'][0]} to csv file")
+                df.to_csv("Data - Company Overviews.csv", mode = 'a', index=False, header=False)
+            else:
+                print(f"Symbol {df['Symbol'][0]} already exists in file")
+        else:
+            print("Creating csv file")
+            df.to_csv("Data - Company Overviews.csv", index=False)
 
 if __name__ == "__main__":
-    getData(config["alphavantage"]["baseurl"], params)
+    CompanyOverview_df_list = getCompanyOverview(base_url, base_params, symbols)
+    getExistingSymbols()
+    createCSV(CompanyOverview_df_list)
