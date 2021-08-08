@@ -1,0 +1,13 @@
+{
+    "rapidapi": {
+        "alphavantage": {
+            "key": "790823c4c7mshc1dc6e51242a198p13f69ejsn818199a22f39",
+            "host": "alpha-vantage.p.rapidapi.com"
+        }
+    },
+    "alphavantage": {
+        "apikey": "9N9CD5299WUJMX0I",
+        "baseurl": "https://www.alphavantage.co/query"
+    }
+
+}
