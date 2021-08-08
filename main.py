@@ -18,6 +18,16 @@ base_params = {
 symbols = ["AMC", "TSLA", "BB"]
 
 def getCompanyOverview(url, params, symbols):
+    """Calls the CompanyOverview API and transforms the data into a csv
+
+    Args:
+        url (string): API URL
+        params (dict): Parameters for the HTTP request
+        symbols (list): A list of ticker symbols
+
+    Returns:
+        list: A DataFrame that contains the wide format data for each symbol in the symbols list
+    """
     df_list = []
     for symbol in symbols:
         params["symbol"] = symbol
@@ -30,11 +40,18 @@ def getCompanyOverview(url, params, symbols):
     return df_list
 
 def getExistingSymbols():
+    """Prints all the ticker symbol information in the Data - Company Overviews csv file
+    """
     data = pd.read_csv("Data - Company Overviews.csv")
     for d in data["Symbol"]:
         print(d, sep = ",")
 
 def createCSV(df_list):
+    """Creates or appends to the Data - Company Overviews.csv file from the df_list
+
+    Args:
+        df_list (list): A list of df's with the same number of columns to use to create/append the resulting csv
+    """
     for df in df_list:
         if pathlib.Path("Data - Company Overviews.csv").exists():
             data = pd.read_csv("Data - Company Overviews.csv")
