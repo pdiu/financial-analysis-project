@@ -15,7 +15,7 @@ base_params = {
     "function": "OVERVIEW"
 }
 
-symbols = ["AMC", "TSLA", "BB"]
+symbols = ["AAPL", "RBLX", "FPH", "MFT"]
 
 def getCompanyOverview(url, params, symbols):
     """Calls the CompanyOverview API and transforms the data into a csv
